@@ -41,6 +41,7 @@
     messagingSenderId: "1052536129954",
     appId: "1:1052536129954:web:2a1fd3f2c06fb2ba874afb"
   };
+  const MASTER_TEACHER_PASSWORD = "devayam9301";
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -663,7 +664,12 @@ function showScreen(id) {
   document.getElementById(id).classList.remove('hidden');
 }
 function backToRoleChooser() { showScreen('screenRoleChooser'); }
-function showTeacherEntry() { showScreen('screenTeacherEntry'); }
+function showTeacherEntry() {
+  const pass = prompt('Enter the Teacher master password:');
+  if (pass === null) return;
+  if (pass !== MASTER_TEACHER_PASSWORD) { alert('Incorrect password.'); return; }
+  showScreen('screenTeacherEntry');
+}
 function showStudentEntry() { showScreen('screenStudentEntry'); }
 function showProjectorEntry() { showScreen('screenProjectorEntry'); }
 

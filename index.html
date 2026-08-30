@@ -33,14 +33,17 @@
 -->
 <script>
   const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyDW0bhsOFBXenkO4hJYW0fsFn7lX-fx4VI",
-    authDomain: "scholaconstructa.firebaseapp.com",
-    databaseURL: "https://scholaconstructa-default-rtdb.firebaseio.com",
-    projectId: "scholaconstructa",
-    storageBucket: "scholaconstructa.firebasestorage.app",
-    messagingSenderId: "1052536129954",
-    appId: "1:1052536129954:web:2a1fd3f2c06fb2ba874afb"
+    apiKey: "PASTE_YOUR_API_KEY",
+    authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://PASTE_YOUR_PROJECT-default-rtdb.firebaseio.com",
+    projectId: "PASTE_YOUR_PROJECT",
+    storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+    messagingSenderId: "PASTE_ME",
+    appId: "PASTE_ME"
   };
+
+  // MASTER TEACHER PASSWORD — required before anyone can open the Teacher
+  // screen. Change this anytime by editing the text between the quotes.
   const MASTER_TEACHER_PASSWORD = "devayam9301";
 </script>
 
@@ -98,17 +101,64 @@ h1, h2, h3, .display {
   padding: 18px 22px 14px;
   border-bottom: 3px solid var(--blueline);
   background: linear-gradient(180deg, rgba(22,67,106,0.5), transparent);
+  gap: 14px;
 }
 
+.logo-box {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border: 2px dashed var(--brass);
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  background: rgba(199,149,47,0.05);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.logo-box:hover { border-color: var(--brass-bright); box-shadow: 0 0 8px rgba(227,176,78,0.3); }
+.logo-box.drag-over { border-color: var(--brass-bright); background: rgba(199,149,47,0.18); }
+
+.bg-drop-zone {
+  border: 2px dashed var(--blueline);
+  border-radius: 8px;
+  padding: 24px 14px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.bg-drop-zone:hover { border-color: var(--brass-bright); color: var(--brass-bright); }
+.bg-drop-zone.drag-over { border-color: var(--brass-bright); background: rgba(199,149,47,0.12); color: var(--brass-bright); }
+.logo-box img { width: 100%; height: 100%; object-fit: cover; }
+
 .brand-title {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--paper);
   margin: 0;
-  line-height: 1;
+  line-height: 1.15;
   text-transform: none;
 }
-.brand-title span { color: var(--brass-bright); }
+.brand-firm {
+  display: block;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.brand-app {
+  display: block;
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-weight: 800;
+  font-size: 2.3rem;
+  color: var(--brass-bright);
+  text-transform: none;
+  letter-spacing: 0.03em;
+  animation: brandGlow 4.5s ease-in-out infinite;
+}
+@keyframes brandGlow {
+  0%, 100% { text-shadow: 0 0 6px rgba(227,176,78,0.25); opacity: 0.92; }
+  50%      { text-shadow: 0 0 16px rgba(227,176,78,0.55); opacity: 1; }
+}
 
 .brand-sub {
   font-family: 'IBM Plex Mono', monospace;
@@ -286,9 +336,23 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
 <!-- HEADER (always visible)                                       -->
 <!-- ============================================================ -->
 <div class="app-header">
+  <div id="logoBox" class="logo-box" onclick="triggerLogoUpload()" title="Click or drag an image here to set your logo">
+    <svg id="logoDefaultSvg" viewBox="0 0 60 60" width="100%" height="100%">
+      <rect x="1" y="1" width="58" height="58" rx="8" fill="var(--blue-deep)"></rect>
+      <circle cx="30" cy="22" r="4" fill="none" stroke="var(--brass-bright)" stroke-width="2"></circle>
+      <line x1="30" y1="26" x2="20" y2="48" stroke="var(--brass-bright)" stroke-width="2" stroke-linecap="round"></line>
+      <line x1="30" y1="26" x2="40" y2="48" stroke="var(--brass-bright)" stroke-width="2" stroke-linecap="round"></line>
+      <line x1="24" y1="38" x2="36" y2="38" stroke="var(--blueline)" stroke-width="1.5"></line>
+      <circle cx="20" cy="48" r="1.6" fill="var(--brass-bright)"></circle>
+      <circle cx="40" cy="48" r="1.6" fill="var(--brass-bright)"></circle>
+    </svg>
+    <img id="logoUploadedImg" src="" alt="Logo" style="display:none;">
+  </div>
+  <input type="file" id="logoUploadInput" accept="image/*" style="display:none;" onchange="handleLogoFileSelect(event)">
+
   <div>
-    <h1 class="brand-title">Devayam's <span>ScholaConstructA</span></h1>
-    <div class="brand-sub">Every learner, a builder of knowledge</div>
+    <h1 class="brand-title"><span class="brand-firm">Devayam's</span><span class="brand-app">ScholaConstructA</span></h1>
+    <div class="brand-sub">Learn &amp; Let Learn</div>
   </div>
   <div class="title-block">
     DRAWN&nbsp;BY: <b>Devayam</b><br>
@@ -395,8 +459,10 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
 
     <div class="tabbar">
       <button class="tab-btn active" data-tab="roster" onclick="switchTeacherTab('roster')">Roster</button>
+      <button class="tab-btn" data-tab="monitor" onclick="switchTeacherTab('monitor')">Monitor</button>
       <button class="tab-btn" data-tab="control" onclick="switchTeacherTab('control')">Projection & Quiz</button>
       <button class="tab-btn" data-tab="scoreboard" onclick="switchTeacherTab('scoreboard')">Scoreboard</button>
+      <button class="tab-btn" data-tab="attendance" onclick="switchTeacherTab('attendance')">Attendance</button>
       <button class="tab-btn" data-tab="settings" onclick="switchTeacherTab('settings')">Settings</button>
     </div>
 
@@ -421,11 +487,29 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
             <option value="5">Groups of 5</option>
             <option value="6">Groups of 6</option>
           </select>
-          <input type="number" id="customGroupSizeInput" placeholder="or custom size" min="2" max="30" style="width:120px;">
+          <input type="number" id="customGroupSizeInput" placeholder="or custom size" min="2" max="500" style="width:120px;">
           <button class="btn btn-outline" onclick="autoGroupClassRoster()">🔀 Randomly Regroup Class</button>
         </div>
         <p class="small-muted">Can be run again anytime during class — group size and membership reshuffle fresh each time.</p>
         <div id="teacherRosterList"></div>
+      </div>
+    </div>
+
+    <!-- Monitor tab: privately view any student's live board on demand -->
+    <div id="tab-monitor" class="teacher-tab hidden">
+      <div class="sheet">
+        <h3>👁️ Monitor Students' Work</h3>
+        <p class="small-muted">Pick a student to privately view what's currently on their board — nothing
+          is shown to the class until you choose to project it. Students' boards
+          auto-save a snapshot every few seconds while they draw.</p>
+        <select id="monitorStudentSelect" style="width:100%; margin-bottom:10px;"><option value="">-- Select a student to view --</option></select>
+        <div id="monitorViewArea" style="text-align:center; min-height:120px; background:#100b1e; border-radius:6px; padding:10px;">
+          <p class="small-muted">Select a student above to see their board here.</p>
+        </div>
+        <div class="flex-gap" style="margin-top:10px;">
+          <button class="btn btn-outline" onclick="refreshMonitorView()">🔄 Refresh</button>
+          <button class="btn btn-brass" onclick="projectMonitoredBoard()">📤 Project This to Class</button>
+        </div>
       </div>
     </div>
 
@@ -451,6 +535,10 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
           <button class="btn btn-outline" onclick="applyTimerPreset(30)">30s</button>
           <button class="btn btn-outline" onclick="applyTimerPreset(60)">1m</button>
           <button class="btn btn-outline" onclick="applyTimerPreset(180)">3m</button>
+        </div>
+        <div class="flex-gap" style="justify-content:center; margin-top:10px; border-top:1px dashed rgba(107,182,224,0.3); padding-top:10px;">
+          <input type="number" id="customTimerSecondsInput" placeholder="Custom seconds" min="1" style="width:140px;">
+          <button class="btn btn-outline" onclick="applyCustomTimerSeconds()">Set</button>
         </div>
       </div>
 
@@ -488,6 +576,23 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
       </div>
     </div>
 
+    <!-- Attendance tab -->
+    <div id="tab-attendance" class="teacher-tab hidden">
+      <div class="sheet">
+        <h3>🗓️ Attendance</h3>
+        <p class="small-muted">A student is marked present automatically when they join on a given
+          day. To continue tracking the SAME class across multiple days, reconnect
+          using "Resume Session" with this session's code + passkey each day,
+          rather than starting a brand new session — that's what keeps the same
+          roster, points, and attendance history linked together.</p>
+        <div class="flex-gap" style="margin-bottom:10px;">
+          <select id="attendanceDateSelect" style="flex:1;"></select>
+          <button class="btn btn-outline" onclick="exportAttendanceCSV()">⬇️ Export CSV</button>
+        </div>
+        <div id="attendanceList"></div>
+      </div>
+    </div>
+
     <!-- Settings tab -->
     <div id="tab-settings" class="teacher-tab hidden">
       <div class="sheet">
@@ -497,6 +602,14 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
           <input type="password" id="newPasskeyInput" placeholder="New passkey">
           <button class="btn btn-outline" onclick="updateSessionPasskey()">Update</button>
         </div>
+      </div>
+      <div class="sheet">
+        <h3>🎨 Background (this device only, for motivation/aesthetics)</h3>
+        <div id="bgDropZone" class="bg-drop-zone">
+          <p style="margin:0; font-size:0.85rem;">📂 Drag an image here, or click to browse</p>
+        </div>
+        <input type="file" id="bgFileInput" accept="image/*" style="display:none;" onchange="handleBgFileSelect(event)">
+        <button class="btn btn-outline" style="margin-top:8px; width:100%;" onclick="resetAppBackground()">🔄 Reset to Default Background</button>
       </div>
       <div class="sheet">
         <h3>⚠️ Danger Zone</h3>
@@ -631,6 +744,12 @@ function restPost(path, data) {
     return r.json();
   });
 }
+function restPut(path, data) {
+  return fetch(restUrl(path), { method: 'PUT', body: JSON.stringify(data) }).then(r => {
+    if (!r.ok) throw new Error('Server responded with status ' + r.status);
+    return r.json();
+  });
+}
 
 function requireDb() {
   if (db) return true;
@@ -647,6 +766,8 @@ window.addEventListener('DOMContentLoaded', () => {
     banner.innerHTML = '⚠️ <strong>Setup problem:</strong> ' + firebaseLoadError.message + ' Buttons on this page won\'t work until this is fixed. Try disabling any ad-blocker/VPN, switching networks, or a different browser, then reload.';
     document.body.prepend(banner);
   }
+  initLogoDragAndDrop();
+  initBgDragAndDrop();
 });
 
 let currentRole = null;       // 'teacher' | 'student' | 'projector'
@@ -666,7 +787,7 @@ function showScreen(id) {
 function backToRoleChooser() { showScreen('screenRoleChooser'); }
 function showTeacherEntry() {
   const pass = prompt('Enter the Teacher master password:');
-  if (pass === null) return;
+  if (pass === null) return; // cancelled
   if (pass !== MASTER_TEACHER_PASSWORD) { alert('Incorrect password.'); return; }
   showScreen('screenTeacherEntry');
 }
@@ -678,6 +799,11 @@ function genCode() {
   let out = '';
   for (let i = 0; i < 5; i++) out += chars[Math.floor(Math.random() * chars.length)];
   return out;
+}
+
+// Today's date as a stable key (YYYY-MM-DD) — used to group attendance by day.
+function todayDateKey() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 // On load: check for QR-scanned join link (?session=XXX&role=student)
@@ -834,21 +960,49 @@ function joinSessionAsStudent() {
   withTimeout(restGet('sessions/' + code + '/meta'), 10000, 'Session lookup').then(meta => {
     if (!meta) { setStatus('❌ No session found with code "' + code + '". Check with your teacher.'); return; }
 
-    setStatus('Session found. Joining as ' + name + '...');
+    setStatus('Checking if you\'ve joined this class before...');
 
     sessionCode = code;
     currentRole = 'student';
-    withTimeout(restPost('sessions/' + code + '/students', { name, section, group: 1, points: 0, joinedAt: Date.now() }), 10000, 'Joining').then(result => {
-      studentKey = result.name;
-      document.getElementById('titleBlockRole').textContent = 'STUDENT';
-      document.getElementById('titleBlockSession').textContent = sessionCode;
-      document.getElementById('studentWelcomeHeading').textContent = 'Welcome, ' + name;
 
-      showScreen('studentApp');
-      initCanvas();
-      attachSessionListeners();
-    }).catch(err => setStatus('❌ Could not save your name: ' + err.message));
+    restGet('sessions/' + code + '/students').then(existingStudents => {
+      const students = existingStudents || {};
+      const normalizedName = name.trim().toLowerCase();
+      const matchKey = Object.keys(students).find(k =>
+        students[k].name && students[k].name.trim().toLowerCase() === normalizedName &&
+        students[k].section === section
+      );
+
+      const proceedWithKey = (key) => {
+        studentKey = key;
+        markTodayAttendance(code, key);
+        document.getElementById('titleBlockRole').textContent = 'STUDENT';
+        document.getElementById('titleBlockSession').textContent = sessionCode;
+        document.getElementById('studentWelcomeHeading').textContent = 'Welcome back, ' + name;
+        showScreen('studentApp');
+        initCanvas();
+        attachSessionListeners();
+      };
+
+      if (matchKey) {
+        setStatus('Welcome back, ' + name + '! Restoring your progress...');
+        proceedWithKey(matchKey);
+      } else {
+        setStatus('New here — creating your profile...');
+        withTimeout(restPost('sessions/' + code + '/students', { name, section, group: 1, points: 0, joinedAt: Date.now() }), 10000, 'Joining').then(result => {
+          proceedWithKey(result.name);
+        }).catch(err => setStatus('❌ Could not save your name: ' + err.message));
+      }
+    }).catch(err => setStatus('❌ Could not check the roster: ' + err.message));
   }).catch(err => setStatus('❌ Could not reach the session: ' + err.message));
+}
+
+// Marks the given student present for today's date, so attendance
+// accumulates across multiple days under the same session code.
+function markTodayAttendance(code, key) {
+  restPut('sessions/' + code + '/attendance/' + todayDateKey() + '/' + key, {
+    status: 'present', ts: Date.now()
+  }).catch(err => console.warn('Attendance write failed:', err.message));
 }
 
 // -------------------- PROJECTOR: join --------------------
@@ -932,6 +1086,15 @@ function renderRosterEverywhere() {
     sel.innerHTML = '<option value="">-- Select student --</option>' +
       entries.map(([key, s]) => `<option value="${key}">${escapeHtml(s.name)} (${escapeHtml(s.section)})</option>`).join('');
     sel.value = prevVal;
+  }
+
+  // Monitor tab dropdown
+  const monSel = document.getElementById('monitorStudentSelect');
+  if (monSel) {
+    const prevMonVal = monSel.value;
+    monSel.innerHTML = '<option value="">-- Select a student to view --</option>' +
+      entries.map(([key, s]) => `<option value="${key}">${escapeHtml(s.name)} (${escapeHtml(s.section)})</option>`).join('');
+    monSel.value = prevMonVal;
   }
 
   renderScoreboards(entries);
@@ -1066,6 +1229,44 @@ function projectSelectedStudent() {
   document.getElementById('currentlyProjectedLabel').textContent = s.name + ' (' + s.section + ')';
 }
 
+// -------------------- Monitor tab: private on-demand board viewing --------------------
+let monitorLastImage = null;
+let monitorLastAuthor = null;
+
+document.addEventListener('change', e => {
+  if (e.target && e.target.id === 'monitorStudentSelect') refreshMonitorView();
+});
+
+function refreshMonitorView() {
+  const key = document.getElementById('monitorStudentSelect').value;
+  const area = document.getElementById('monitorViewArea');
+  if (!key) { area.innerHTML = '<p class="small-muted">Select a student above to see their board here.</p>'; return; }
+
+  const s = studentsCache[key];
+  area.innerHTML = '<p class="small-muted">Loading...</p>';
+
+  restGet('sessions/' + sessionCode + '/liveBoards/' + key).then(data => {
+    if (!data || !data.image) {
+      area.innerHTML = '<p class="small-muted">' + escapeHtml(s ? s.name : 'This student') + ' hasn\'t drawn anything yet.</p>';
+      monitorLastImage = null;
+      return;
+    }
+    monitorLastImage = data.image;
+    monitorLastAuthor = s ? s.name : 'Student';
+    const ago = Math.max(0, Math.round((Date.now() - (data.ts || 0)) / 1000));
+    area.innerHTML = `
+      <img src="${data.image}" style="max-width:100%; max-height:300px; border-radius:6px; border:2px solid var(--brass);">
+      <p class="small-muted" style="margin-top:6px;">Last updated ${ago}s ago — click Refresh for the latest.</p>
+    `;
+  }).catch(err => { area.innerHTML = '<p class="small-muted">Could not load: ' + err.message + '</p>'; });
+}
+
+function projectMonitoredBoard() {
+  if (!monitorLastImage) { alert('View a student\'s board first, then project it.'); return; }
+  db.ref('sessions/' + sessionCode + '/meta/projected').set({ type: 'canvas', author: monitorLastAuthor, image: monitorLastImage });
+  alert('Projected ' + monitorLastAuthor + '\'s board to the class!');
+}
+
 function clearProjection() {
   db.ref('sessions/' + sessionCode + '/meta/projected').set({ type: 'none' });
   document.getElementById('currentlyProjectedLabel').textContent = 'None';
@@ -1184,6 +1385,12 @@ function applyTimerPreset(seconds) {
   db.ref('sessions/' + sessionCode + '/meta/timer').set({ presetSeconds: seconds, runningUntil: null });
 }
 
+function applyCustomTimerSeconds() {
+  const val = parseInt(document.getElementById('customTimerSecondsInput').value, 10);
+  if (!val || val < 1) { alert('Enter a duration of 1 second or more.'); return; }
+  applyTimerPreset(val);
+}
+
 // -------------------- Feedback / reflections --------------------
 function submitStudentFeedback() {
   const input = document.getElementById('studentFeedbackInput');
@@ -1224,6 +1431,90 @@ function switchTeacherTab(tab) {
   document.querySelectorAll('.teacher-tab').forEach(el => el.classList.add('hidden'));
   document.getElementById('tab-' + tab).classList.remove('hidden');
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+  if (tab === 'attendance') loadAttendanceDates();
+}
+
+// -------------------- Attendance --------------------
+function loadAttendanceDates() {
+  const select = document.getElementById('attendanceDateSelect');
+  if (!select) return;
+  const today = todayDateKey();
+
+  restGet('sessions/' + sessionCode + '/attendance').then(allAttendance => {
+    const dates = Object.keys(allAttendance || {}).sort().reverse();
+    if (!dates.includes(today)) dates.unshift(today); // always offer today, even with 0 present so far
+
+    const prevVal = select.value;
+    select.innerHTML = dates.map(d => `<option value="${d}">${d === today ? d + ' (Today)' : d}</option>`).join('');
+    select.value = dates.includes(prevVal) ? prevVal : today;
+    select.onchange = renderAttendanceForSelectedDate;
+    renderAttendanceForSelectedDate();
+  }).catch(err => {
+    const list = document.getElementById('attendanceList');
+    if (list) list.innerHTML = '<p class="small-muted">Could not load attendance: ' + err.message + '</p>';
+  });
+}
+
+function renderAttendanceForSelectedDate() {
+  const select = document.getElementById('attendanceDateSelect');
+  const list = document.getElementById('attendanceList');
+  if (!select || !list) return;
+  const date = select.value;
+  if (!date) { list.innerHTML = ''; return; }
+
+  restGet('sessions/' + sessionCode + '/attendance/' + date).then(dayAttendance => {
+    const attendance = dayAttendance || {};
+    const entries = Object.entries(studentsCache);
+
+    if (!entries.length) { list.innerHTML = '<p class="small-muted">No students in the roster yet.</p>'; return; }
+
+    const presentCount = entries.filter(([key]) => attendance[key] && attendance[key].status !== 'absent').length;
+
+    list.innerHTML = `<p class="small-muted" style="margin-bottom:8px;">${presentCount} of ${entries.length} present on ${date}.</p>` +
+      entries.map(([key, s]) => {
+        const record = attendance[key];
+        const status = record ? record.status : 'absent';
+        const badgeColor = status === 'present' ? 'var(--green-ok)' : status === 'makeup' ? 'var(--brass-bright)' : 'var(--orange)';
+        const badgeLabel = status === 'present' ? '✅ Present' : status === 'makeup' ? '🔁 Make-up' : '❌ Absent';
+        return `
+          <div class="row">
+            <span>${escapeHtml(s.name)} <span class="grp-tag">${escapeHtml(s.section)}</span></span>
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span style="color:${badgeColor}; font-weight:700; font-size:0.78rem;">${badgeLabel}</span>
+              ${status === 'absent' ? `<button class="btn btn-outline" style="padding:2px 8px; font-size:0.68rem;" onclick="markAsMakeup('${date}','${key}')">Mark make-up</button>` : ''}
+            </span>
+          </div>`;
+      }).join('');
+  }).catch(err => { list.innerHTML = '<p class="small-muted">Could not load: ' + err.message + '</p>'; });
+}
+
+function markAsMakeup(date, key) {
+  restPut('sessions/' + sessionCode + '/attendance/' + date + '/' + key, { status: 'makeup', ts: Date.now() })
+    .then(renderAttendanceForSelectedDate)
+    .catch(err => alert('Could not update: ' + err.message));
+}
+
+function exportAttendanceCSV() {
+  const select = document.getElementById('attendanceDateSelect');
+  const date = select ? select.value : todayDateKey();
+  if (!date) { alert('Select a date first.'); return; }
+
+  restGet('sessions/' + sessionCode + '/attendance/' + date).then(dayAttendance => {
+    const attendance = dayAttendance || {};
+    const entries = Object.entries(studentsCache);
+    let csv = 'Name,Section,Date,Status\n';
+    entries.forEach(([key, s]) => {
+      const status = attendance[key] ? attendance[key].status : 'absent';
+      csv += `"${s.name}","${s.section}","${date}","${status}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'attendance_' + date + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }).catch(err => alert('Could not export: ' + err.message));
 }
 
 // -------------------- Settings --------------------
@@ -1243,6 +1534,97 @@ function endSession() {
 }
 
 // -------------------- Celebration --------------------
+// ================================================================
+// LOGO (default themed SVG shown until a custom one is uploaded;
+// supports click-to-browse AND drag-and-drop directly onto the box)
+// ================================================================
+function triggerLogoUpload() {
+  document.getElementById('logoUploadInput').click();
+}
+
+function applyLogoFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('logoDefaultSvg').style.display = 'none';
+    const img = document.getElementById('logoUploadedImg');
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleLogoFileSelect(event) {
+  const file = event.target.files[0];
+  applyLogoFile(file);
+}
+
+function initLogoDragAndDrop() {
+  const box = document.getElementById('logoBox');
+  if (!box) return;
+  ['dragenter', 'dragover'].forEach(evt => {
+    box.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); box.classList.add('drag-over'); });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    box.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); box.classList.remove('drag-over'); });
+  });
+  box.addEventListener('drop', e => {
+    const file = e.dataTransfer.files[0];
+    applyLogoFile(file);
+  });
+}
+
+// ================================================================
+// APP BACKGROUND (teacher-only, this device only — purely aesthetic/
+// motivational, not synced to students or the projector)
+// ================================================================
+const DEFAULT_APP_BACKGROUND = {
+  image: '',
+  size: '26px 26px',
+  gradient: 'linear-gradient(rgba(107,182,224,0.09) 1px, transparent 1px), linear-gradient(90deg, rgba(107,182,224,0.09) 1px, transparent 1px)'
+};
+
+function applyBackgroundFile(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.body.style.backgroundImage = `url('${e.target.result}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleBgFileSelect(event) {
+  applyBackgroundFile(event.target.files[0]);
+}
+
+function resetAppBackground() {
+  document.body.style.backgroundImage = DEFAULT_APP_BACKGROUND.gradient;
+  document.body.style.backgroundSize = DEFAULT_APP_BACKGROUND.size;
+  document.body.style.backgroundPosition = '';
+  document.body.style.backgroundAttachment = 'fixed';
+  const fileInput = document.getElementById('bgFileInput');
+  if (fileInput) fileInput.value = '';
+}
+
+function initBgDragAndDrop() {
+  const zone = document.getElementById('bgDropZone');
+  if (!zone) return;
+  zone.addEventListener('click', () => document.getElementById('bgFileInput').click());
+  ['dragenter', 'dragover'].forEach(evt => {
+    zone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); zone.classList.add('drag-over'); });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    zone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); zone.classList.remove('drag-over'); });
+  });
+  zone.addEventListener('drop', e => {
+    const file = e.dataTransfer.files[0];
+    applyBackgroundFile(file);
+  });
+}
+
 function triggerCelebration() {
   if (typeof confetti === 'function') {
     confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
@@ -1293,7 +1675,10 @@ function initCanvas() {
     stylusCtx.lineTo(p.x, p.y);
     stylusCtx.stroke();
   }
-  function stopDraw() { isDrawing = false; }
+  function stopDraw() {
+    if (isDrawing) scheduleLiveBoardSave();
+    isDrawing = false;
+  }
 
   stylusCanvas.addEventListener('mousedown', startDraw);
   stylusCanvas.addEventListener('mousemove', draw);
@@ -1337,6 +1722,19 @@ function shareCanvasLive() {
   alert('Board shared to the projector!');
 }
 
+// ---- Auto-save a private snapshot so the teacher can privately view this
+// board on demand (Monitor tab), without the student needing to share it.
+// Debounced so it doesn't write to the database on every single stroke.
+let liveBoardSaveTimeout = null;
+function scheduleLiveBoardSave() {
+  if (!studentKey || !stylusCanvas) return;
+  clearTimeout(liveBoardSaveTimeout);
+  liveBoardSaveTimeout = setTimeout(() => {
+    const dataURL = stylusCanvas.toDataURL('image/jpeg', 0.6);
+    db.ref('sessions/' + sessionCode + '/liveBoards/' + studentKey).set({ image: dataURL, ts: Date.now() });
+  }, 1500);
+}
+
 // ---- Upload an image onto the student's own board ----
 function triggerImageUpload() { document.getElementById('canvasImageInput').click(); }
 
@@ -1350,6 +1748,7 @@ function handleCanvasImageUpload(event) {
       const scale = Math.min(stylusCanvas.width / img.width, stylusCanvas.height / img.height, 1);
       const w = img.width * scale, h = img.height * scale;
       stylusCtx.drawImage(img, (stylusCanvas.width - w) / 2, (stylusCanvas.height - h) / 2, w, h);
+      scheduleLiveBoardSave();
     };
     img.src = e.target.result;
   };

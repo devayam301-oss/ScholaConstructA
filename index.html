@@ -153,11 +153,11 @@ h1, h2, h3, .display {
   color: var(--brass-bright);
   text-transform: none;
   letter-spacing: 0.03em;
-  animation: brandGlow 4.5s ease-in-out infinite;
+  animation: brandGlow 3s ease-in-out infinite;
 }
 @keyframes brandGlow {
-  0%, 100% { text-shadow: 0 0 6px rgba(227,176,78,0.25); opacity: 0.92; }
-  50%      { text-shadow: 0 0 16px rgba(227,176,78,0.55); opacity: 1; }
+  0%, 100% { text-shadow: 0 0 4px rgba(227,176,78,0.2); opacity: 0.85; transform: scale(1); }
+  50%      { text-shadow: 0 0 24px rgba(227,176,78,0.9), 0 0 40px rgba(227,176,78,0.4); opacity: 1; transform: scale(1.015); }
 }
 
 .brand-sub {

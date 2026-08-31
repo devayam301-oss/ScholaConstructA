@@ -369,22 +369,22 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
   <div id="screenRoleChooser" class="view">
     <div class="sheet">
       <h3>Who's opening this page?</h3>
-      <p class="small-muted">Pick the role for this device. The teacher creates a session first; students and the projector then join it with the session code.</p>
+      <p class="small-muted">Pick the role for this device. The facilitator creates a session first; learners and the projector then join it with the session code.</p>
       <div class="role-grid">
         <div class="role-card" onclick="showTeacherEntry()">
           <span class="icon">🧭</span>
-          <h3>Teacher</h3>
+          <h3>Facilitator</h3>
           <p>Start or resume a class session, run the projector, and manage the scoreboard.</p>
         </div>
         <div class="role-card" onclick="showStudentEntry()">
           <span class="icon">🖐️</span>
-          <h3>Student</h3>
-          <p>Scan the QR code shown by your teacher, or type in the session code.</p>
+          <h3>Learner</h3>
+          <p>Scan the QR code shown by your facilitator, or type in the session code.</p>
         </div>
         <div class="role-card" onclick="showProjectorEntry()">
           <span class="icon">📽️</span>
-          <h3>Projector Screen</h3>
-          <p>Open this on the classroom display. It shows whatever the teacher chooses to share.</p>
+          <h3>Projector</h3>
+          <p>Open this on the classroom display. It shows whatever the facilitator chooses to share.</p>
         </div>
       </div>
     </div>
@@ -395,7 +395,7 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
   <!-- ============================================================ -->
   <div id="screenTeacherEntry" class="view hidden">
     <div class="sheet">
-      <h3>Teacher Access</h3>
+      <h3>Facilitator Access</h3>
       <div class="flex-gap" style="margin-bottom:14px;">
         <button class="btn btn-brass" onclick="createNewSession()">➕ Start New Class Session</button>
       </div>
@@ -416,7 +416,7 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
     <div class="sheet">
       <h3>Join a Class Session</h3>
       <div style="display:flex; flex-direction:column; gap:10px; max-width:340px;">
-        <input type="text" id="joinCodeInput" placeholder="Session code (from teacher)" maxlength="6" style="text-transform:uppercase;">
+        <input type="text" id="joinCodeInput" placeholder="Session code (from facilitator)" maxlength="6" style="text-transform:uppercase;">
         <button class="btn btn-outline" type="button" onclick="lookupRosterForJoin()">🔎 Find My Name</button>
         <div id="joinNameFieldWrap">
           <input type="text" id="joinNameInput" placeholder="Your name">
@@ -437,7 +437,7 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
   <!-- ============================================================ -->
   <div id="screenProjectorEntry" class="view hidden">
     <div class="sheet">
-      <h3>Connect Projector Screen</h3>
+      <h3>Connect Projector</h3>
       <div class="flex-gap">
         <input type="text" id="projCodeInput" placeholder="Session code" maxlength="6" style="width:140px; text-transform:uppercase;">
         <button class="btn btn-brass" onclick="joinAsProjector()">Connect →</button>
@@ -502,9 +502,9 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
         <p class="small-muted">Pick a student to privately view what's currently on their board — nothing
           is shown to the class until you choose to project it. Students' boards
           auto-save a snapshot every few seconds while they draw.</p>
-        <select id="monitorStudentSelect" style="width:100%; margin-bottom:10px;"><option value="">-- Select a student to view --</option></select>
+        <select id="monitorStudentSelect" style="width:100%; margin-bottom:10px;"><option value="">-- Select a learner to view --</option></select>
         <div id="monitorViewArea" style="text-align:center; min-height:120px; background:#100b1e; border-radius:6px; padding:10px;">
-          <p class="small-muted">Select a student above to see their board here.</p>
+          <p class="small-muted">Select a learner above to see their board here.</p>
         </div>
         <div class="flex-gap" style="margin-top:10px;">
           <button class="btn btn-outline" onclick="refreshMonitorView()">🔄 Refresh</button>
@@ -518,7 +518,7 @@ input::placeholder, textarea::placeholder { color: var(--text-muted); }
       <div class="sheet">
         <h3>📺 Project a Learner</h3>
         <div class="flex-gap">
-          <select id="projectStudentSelect" style="flex:1;"><option value="">-- Select student --</option></select>
+          <select id="projectStudentSelect" style="flex:1;"><option value="">-- Select learner --</option></select>
           <button class="btn btn-brass" onclick="projectSelectedStudent()">Project</button>
           <button class="btn btn-orange" onclick="clearProjection()">Clear</button>
         </div>
@@ -786,7 +786,7 @@ function showScreen(id) {
 }
 function backToRoleChooser() { showScreen('screenRoleChooser'); }
 function showTeacherEntry() {
-  const pass = prompt('Enter the Teacher master password:');
+  const pass = prompt('Enter the Facilitator master password:');
   if (pass === null) return; // cancelled
   if (pass !== MASTER_TEACHER_PASSWORD) { alert('Incorrect password.'); return; }
   showScreen('screenTeacherEntry');
@@ -867,7 +867,7 @@ function resumeSession() {
 }
 
 function enterTeacherApp() {
-  document.getElementById('titleBlockRole').textContent = 'TEACHER';
+  document.getElementById('titleBlockRole').textContent = 'FACILITATOR';
   document.getElementById('titleBlockSession').textContent = sessionCode;
   document.getElementById('teacherSessionCodeDisplay').textContent = sessionCode;
 
@@ -976,7 +976,7 @@ function joinSessionAsStudent() {
       const proceedWithKey = (key) => {
         studentKey = key;
         markTodayAttendance(code, key);
-        document.getElementById('titleBlockRole').textContent = 'STUDENT';
+        document.getElementById('titleBlockRole').textContent = 'LEARNER';
         document.getElementById('titleBlockSession').textContent = sessionCode;
         document.getElementById('studentWelcomeHeading').textContent = 'Welcome back, ' + name;
         showScreen('studentApp');
@@ -1083,7 +1083,7 @@ function renderRosterEverywhere() {
   const sel = document.getElementById('projectStudentSelect');
   if (sel) {
     const prevVal = sel.value;
-    sel.innerHTML = '<option value="">-- Select student --</option>' +
+    sel.innerHTML = '<option value="">-- Select learner --</option>' +
       entries.map(([key, s]) => `<option value="${key}">${escapeHtml(s.name)} (${escapeHtml(s.section)})</option>`).join('');
     sel.value = prevVal;
   }
@@ -1092,7 +1092,7 @@ function renderRosterEverywhere() {
   const monSel = document.getElementById('monitorStudentSelect');
   if (monSel) {
     const prevMonVal = monSel.value;
-    monSel.innerHTML = '<option value="">-- Select a student to view --</option>' +
+    monSel.innerHTML = '<option value="">-- Select a learner to view --</option>' +
       entries.map(([key, s]) => `<option value="${key}">${escapeHtml(s.name)} (${escapeHtml(s.section)})</option>`).join('');
     monSel.value = prevMonVal;
   }
@@ -1223,7 +1223,7 @@ function autoGroupClassRoster() {
 // -------------------- Projection (student spotlight / quiz / canvas / feedback) --------------------
 function projectSelectedStudent() {
   const key = document.getElementById('projectStudentSelect').value;
-  if (!key) { alert('Select a student first.'); return; }
+  if (!key) { alert('Select a learner first.'); return; }
   const s = studentsCache[key];
   db.ref('sessions/' + sessionCode + '/meta/projected').set({ type: 'student', studentKey: key, name: s.name, section: s.section, group: s.group, points: s.points });
   document.getElementById('currentlyProjectedLabel').textContent = s.name + ' (' + s.section + ')';
@@ -1240,7 +1240,7 @@ document.addEventListener('change', e => {
 function refreshMonitorView() {
   const key = document.getElementById('monitorStudentSelect').value;
   const area = document.getElementById('monitorViewArea');
-  if (!key) { area.innerHTML = '<p class="small-muted">Select a student above to see their board here.</p>'; return; }
+  if (!key) { area.innerHTML = '<p class="small-muted">Select a learner above to see their board here.</p>'; return; }
 
   const s = studentsCache[key];
   area.innerHTML = '<p class="small-muted">Loading...</p>';
@@ -1543,7 +1543,11 @@ function triggerLogoUpload() {
 }
 
 function applyLogoFile(file) {
-  if (!file || !file.type.startsWith('image/')) return;
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    alert('⚠️ That file isn\'t a supported image (it looks like a ' + (file.type || 'unknown type') + ' file).\n\nIf this came from WhatsApp: WhatsApp often converts GIFs into video (.mp4) files when sending, even though it still looks like an animation in the chat. Try saving the original GIF directly (not via WhatsApp), or use a different image.');
+    return;
+  }
   const reader = new FileReader();
   reader.onload = e => {
     document.getElementById('logoDefaultSvg').style.display = 'none';
@@ -1585,7 +1589,11 @@ const DEFAULT_APP_BACKGROUND = {
 };
 
 function applyBackgroundFile(file) {
-  if (!file || !file.type.startsWith('image/')) return;
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    alert('⚠️ That file isn\'t a supported image (it looks like a ' + (file.type || 'unknown type') + ' file).\n\nIf this came from WhatsApp: WhatsApp often converts GIFs into video (.mp4) files when sending, even though it still looks like an animation in the chat. Try saving the original GIF directly (not via WhatsApp), or use a different image.');
+    return;
+  }
   const reader = new FileReader();
   reader.onload = e => {
     document.body.style.backgroundImage = `url('${e.target.result}')`;
